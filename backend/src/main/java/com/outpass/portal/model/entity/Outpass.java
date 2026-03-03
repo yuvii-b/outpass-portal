@@ -1,14 +1,30 @@
 package com.outpass.portal.model.entity;
 
+import java.time.LocalDateTime;
+
 import com.outpass.portal.model.enums.OutpassStatus;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
-
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "outpasses")
@@ -78,6 +94,22 @@ public class Outpass {
     @Column(nullable = false)
     @Builder.Default
     private OutpassStatus status = OutpassStatus.PENDING;
+
+    @Column(name = "actual_departure_time")
+    private LocalDateTime actualDepartureTime;
+
+    @Column(name = "actual_return_time")
+    private LocalDateTime actualReturnTime;
+
+    @Column(name = "departure_verified_by")
+    private Long departureVerifiedBy;
+
+    @Column(name = "return_verified_by")
+    private Long returnVerifiedBy;
+
+    @Column(name = "is_late_return")
+    @Builder.Default
+    private Boolean isLateReturn = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -204,9 +204,82 @@ public class OutpassService {
                 .contactNumber(outpass.getContactNumber())
                 .parentNumber(outpass.getParentNumber())
                 .status(outpass.getStatus())
+                .actualDepartureTime(outpass.getActualDepartureTime())
+                .actualReturnTime(outpass.getActualReturnTime())
+                .departureVerifiedBy(outpass.getDepartureVerifiedBy())
+                .returnVerifiedBy(outpass.getReturnVerifiedBy())
+                .isLateReturn(outpass.getIsLateReturn())
                 .createdAt(outpass.getCreatedAt())
                 .updatedAt(outpass.getUpdatedAt())
                 .build();
+    }
+
+    @Transactional
+    public OutpassResponse markDeparture(Long outpassId, Long securityGuardId, String hostel) {
+        Outpass outpass = outpassRepository.findById(outpassId)
+                .orElseThrow(() -> new RuntimeException("Outpass not found"));
+
+        if (!outpass.getHostel().equals(hostel)) {
+            throw new RuntimeException("You can only verify outpasses from your own hostel");
+        }
+
+        if (outpass.getStatus() != OutpassStatus.APPROVED) {
+            throw new RuntimeException("Only approved outpasses can be marked as departed");
+        }
+
+        if (outpass.getActualDepartureTime() != null) {
+            throw new RuntimeException("Departure already verified");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        outpass.setActualDepartureTime(now);
+        outpass.setDepartureVerifiedBy(securityGuardId);
+        outpass.setStatus(OutpassStatus.DEPARTED);
+
+        Outpass updated = outpassRepository.save(outpass);
+        return mapToResponse(updated);
+    }
+
+    @Transactional
+    public OutpassResponse markReturn(Long outpassId, Long securityGuardId, String hostel) {
+        Outpass outpass = outpassRepository.findById(outpassId)
+                .orElseThrow(() -> new RuntimeException("Outpass not found"));
+
+        if (!outpass.getHostel().equals(hostel)) {
+            throw new RuntimeException("You can only verify outpasses from your own hostel");
+        }
+
+        if (outpass.getStatus() != OutpassStatus.DEPARTED) {
+            throw new RuntimeException("Student must be marked as departed before marking return");
+        }
+
+        if (outpass.getActualReturnTime() != null) {
+            throw new RuntimeException("Return already verified");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        outpass.setActualReturnTime(now);
+        outpass.setReturnVerifiedBy(securityGuardId);
+
+        // Check if student is late
+        if (now.isAfter(outpass.getReturnDate())) {
+            outpass.setIsLateReturn(true);
+            outpass.setStatus(OutpassStatus.OVERDUE);
+        } else {
+            outpass.setIsLateReturn(false);
+            outpass.setStatus(OutpassStatus.COMPLETED);
+        }
+
+        Outpass updated = outpassRepository.save(outpass);
+        return mapToResponse(updated);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OutpassResponse> getDepartedOutpassesByHostel(String hostel) {
+        return outpassRepository.findByHostelAndStatusOrderByCreatedAtDesc(hostel, OutpassStatus.DEPARTED)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
 

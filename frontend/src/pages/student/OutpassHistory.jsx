@@ -30,6 +30,9 @@ const OutpassHistory = () => {
       PENDING: 'bg-warning text-dark',
       APPROVED: 'bg-success',
       DECLINED: 'bg-danger',
+      DEPARTED: 'bg-primary',
+      COMPLETED: 'bg-info',
+      OVERDUE: 'bg-danger',
       EXPIRED: 'bg-secondary',
     };
     return badges[status] || 'bg-secondary';

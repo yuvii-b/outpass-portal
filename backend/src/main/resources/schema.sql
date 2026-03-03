@@ -111,7 +111,12 @@ CREATE TABLE outpasses (
     visit_place VARCHAR(255) NOT NULL,
     contact_number VARCHAR(15) NOT NULL,
     parent_number VARCHAR(15) NOT NULL,
-    status ENUM('PENDING', 'APPROVED', 'DECLINED') NOT NULL DEFAULT 'PENDING',
+    status ENUM('PENDING', 'APPROVED', 'DECLINED', 'DEPARTED', 'COMPLETED', 'OVERDUE') NOT NULL DEFAULT 'PENDING',
+    actual_departure_time DATETIME NULL,
+    actual_return_time DATETIME NULL,
+    departure_verified_by BIGINT NULL,
+    return_verified_by BIGINT NULL,
+    is_late_return BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

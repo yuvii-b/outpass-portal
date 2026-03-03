@@ -59,8 +59,23 @@ const outpassService = {
     return response.data;
   },
 
+  getDepartedOutpasses: async () => {
+    const response = await api.get('/security/outpass/departed');
+    return response.data;
+  },
+
   getSecurityOutpassById: async (id) => {
     const response = await api.get(`/security/outpass/${id}`);
+    return response.data;
+  },
+
+  markDeparture: async (id) => {
+    const response = await api.put(`/security/outpass/${id}/mark-departure`);
+    return response.data;
+  },
+
+  markReturn: async (id) => {
+    const response = await api.put(`/security/outpass/${id}/mark-return`);
     return response.data;
   },
 };

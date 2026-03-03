@@ -1,12 +1,13 @@
 package com.outpass.portal.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.outpass.portal.model.enums.OutpassStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -26,6 +27,11 @@ public class OutpassResponse {
     private String contactNumber;
     private String parentNumber;
     private OutpassStatus status;
+    private LocalDateTime actualDepartureTime;
+    private LocalDateTime actualReturnTime;
+    private Long departureVerifiedBy;
+    private Long returnVerifiedBy;
+    private Boolean isLateReturn;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

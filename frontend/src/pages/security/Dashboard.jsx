@@ -5,10 +5,11 @@ import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 
 const SecurityDashboard = () => {
-  const [activeOutpasses, setActiveOutpasses] = useState([]);
+  const [approvedOutpasses, setApprovedOutpasses] = useState([]);
+  const [departedOutpasses, setDepartedOutpasses] = useState([]);
   const [todayOutpasses, setTodayOutpasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState('approved');
 
   useEffect(() => {
     fetchData();
@@ -16,12 +17,14 @@ const SecurityDashboard = () => {
 
   const fetchData = async () => {
     try {
-      const [activeRes, todayRes] = await Promise.all([
+      const [activeRes, departedRes, todayRes] = await Promise.all([
         outpassService.getActiveOutpasses(),
+        outpassService.getDepartedOutpasses(),
         outpassService.getTodayOutpasses(),
       ]);
       
-      setActiveOutpasses(activeRes.data);
+      setApprovedOutpasses(activeRes.data);
+      setDepartedOutpasses(departedRes.data);
       setTodayOutpasses(todayRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -31,46 +34,96 @@ const SecurityDashboard = () => {
     }
   };
 
+  const handleMarkDeparture = async (id) => {
+    if (!window.confirm('Confirm student departure?')) return;
+
+    try {
+      await outpassService.markDeparture(id);
+      toast.success('Departure verified successfully!');
+      fetchData(); // Refresh data
+    } catch (error) {
+      console.error('Error marking departure:', error);
+      toast.error(error.response?.data?.message || 'Failed to mark departure');
+    }
+  };
+
+  const handleMarkReturn = async (id) => {
+    if (!window.confirm('Confirm student return?')) return;
+
+    try {
+      await outpassService.markReturn(id);
+      toast.success('Return verified successfully!');
+      fetchData(); // Refresh data
+    } catch (error) {
+      console.error('Error marking return:', error);
+      toast.error(error.response?.data?.message || 'Failed to mark return');
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       PENDING: 'bg-warning text-dark',
       APPROVED: 'bg-success',
       DECLINED: 'bg-danger',
-      EXPIRED: 'bg-secondary',
+      DEPARTED: 'bg-primary',
+      COMPLETED: 'bg-info',
+      OVERDUE: 'bg-danger',
     };
     return badges[status] || 'bg-secondary';
   };
 
   if (loading) return <LoadingSpinner />;
 
-  const displayOutpasses = activeTab === 'active' ? activeOutpasses : todayOutpasses;
+  const getDisplayOutpasses = () => {
+    switch (activeTab) {
+      case 'approved':
+        return approvedOutpasses;
+      case 'departed':
+        return departedOutpasses;
+      case 'today':
+        return todayOutpasses;
+      default:
+        return approvedOutpasses;
+    }
+  };
+
+  const displayOutpasses = getDisplayOutpasses();
 
   return (
     <div className="container mt-4">
       <div className="row mb-4">
         <div className="col-12">
           <h2>Security Guard Dashboard</h2>
-          <p className="text-muted">Monitor approved outpasses and student movements</p>
+          <p className="text-muted">Verify student entry and exit</p>
         </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="row mb-4">
-        <div className="col-md-6">
+        <div className="col-md-4">
           <div className="card text-center bg-success text-white h-100 shadow">
             <div className="card-body">
-              <h1 className="display-3">{activeOutpasses.length}</h1>
-              <h5>Active Outpasses</h5>
-              <p className="mb-0">Currently approved</p>
+              <h1 className="display-3">{approvedOutpasses.length}</h1>
+              <h5>Approved - Ready to Exit</h5>
+              <p className="mb-0">Awaiting departure verification</p>
             </div>
           </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-md-4">
+          <div className="card text-center bg-primary text-white h-100 shadow">
+            <div className="card-body">
+              <h1 className="display-3">{departedOutpasses.length}</h1>
+              <h5>Departed - Outside</h5>
+              <p className="mb-0">Awaiting return verification</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
           <div className="card text-center bg-info text-white h-100 shadow">
             <div className="card-body">
               <h1 className="display-3">{todayOutpasses.length}</h1>
-              <h5>Today's Outpasses</h5>
-              <p className="mb-0">Scheduled for today</p>
+              <h5>Today's Schedule</h5>
+              <p className="mb-0">All outpasses for today</p>
             </div>
           </div>
         </div>
@@ -82,10 +135,18 @@ const SecurityDashboard = () => {
           <ul className="nav nav-tabs">
             <li className="nav-item">
               <button
-                className={`nav-link ${activeTab === 'active' ? 'active' : ''}`}
-                onClick={() => setActiveTab('active')}
+                className={`nav-link ${activeTab === 'approved' ? 'active' : ''}`}
+                onClick={() => setActiveTab('approved')}
               >
-                Active Outpasses ({activeOutpasses.length})
+                ✅ Ready to Exit ({approvedOutpasses.length})
+              </button>
+            </li>
+            <li className="nav-item">
+              <button
+                className={`nav-link ${activeTab === 'departed' ? 'active' : ''}`}
+                onClick={() => setActiveTab('departed')}
+              >
+                🚪 Outside - Pending Return ({departedOutpasses.length})
               </button>
             </li>
             <li className="nav-item">
@@ -93,7 +154,7 @@ const SecurityDashboard = () => {
                 className={`nav-link ${activeTab === 'today' ? 'active' : ''}`}
                 onClick={() => setActiveTab('today')}
               >
-                Today's Outpasses ({todayOutpasses.length})
+                📅 Today's Schedule ({todayOutpasses.length})
               </button>
             </li>
           </ul>
@@ -108,7 +169,9 @@ const SecurityDashboard = () => {
               {displayOutpasses.length === 0 ? (
                 <div className="text-center py-5">
                   <h5 className="text-muted">
-                    {activeTab === 'active' ? 'No active outpasses' : 'No outpasses scheduled for today'}
+                    {activeTab === 'approved' && 'No approved outpasses ready for exit'}
+                    {activeTab === 'departed' && 'No students currently outside'}
+                    {activeTab === 'today' && 'No outpasses scheduled for today'}
                   </h5>
                 </div>
               ) : (
@@ -116,42 +179,87 @@ const SecurityDashboard = () => {
                   <table className="table table-hover">
                     <thead className="table-light">
                       <tr>
-                        <th>ID</th>
-                        <th>Student Name</th>
+                        <th>Student</th>
                         <th>Roll No</th>
-                        <th>Department</th>
-                        <th>Hostel</th>
-                        <th>Room</th>
+                        <th>Hostel/Room</th>
                         <th>Place</th>
-                        <th>Departure</th>
-                        <th>Return</th>
-                        <th>Days</th>
+                        <th>Schedule</th>
                         <th>Contact</th>
                         <th>Status</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {displayOutpasses.map((outpass) => (
                         <tr key={outpass.id}>
-                          <td>{outpass.id}</td>
-                          <td>{outpass.name}</td>
-                          <td>{outpass.rollNo}</td>
-                          <td>{outpass.department}</td>
-                          <td>{outpass.hostel}</td>
-                          <td>{outpass.roomNumber}</td>
-                          <td>{outpass.placeOfVisit}</td>
-                          <td>{format(new Date(outpass.date), 'dd/MM/yyyy HH:mm')}</td>
-                          <td>{format(new Date(outpass.returnDate), 'dd/MM/yyyy HH:mm')}</td>
-                          <td>{outpass.noOfDays}</td>
                           <td>
-                            {outpass.contactNumber}
+                            <strong>{outpass.name}</strong>
                             <br />
-                            <small className="text-muted">Parent: {outpass.parentNumber}</small>
+                            <small className="text-muted">{outpass.department}</small>
+                          </td>
+                          <td>{outpass.rollNo}</td>
+                          <td>
+                            {outpass.hostel}
+                            <br />
+                            <small>Room: {outpass.roomNumber}</small>
+                          </td>
+                          <td>{outpass.placeOfVisit}</td>
+                          <td>
+                            <small>
+                              <strong>Out:</strong> {format(new Date(outpass.date), 'dd/MM HH:mm')}
+                              <br />
+                              <strong>Return:</strong> {format(new Date(outpass.returnDate), 'dd/MM HH:mm')}
+                              {outpass.actualDepartureTime && (
+                                <>
+                                  <br />
+                                  <span className="text-success">
+                                    ✓ Left: {format(new Date(outpass.actualDepartureTime), 'dd/MM HH:mm')}
+                                  </span>
+                                </>
+                              )}
+                              {outpass.actualReturnTime && (
+                                <>
+                                  <br />
+                                  <span className={outpass.isLateReturn ? 'text-danger' : 'text-success'}>
+                                    ✓ Returned: {format(new Date(outpass.actualReturnTime), 'dd/MM HH:mm')}
+                                    {outpass.isLateReturn && ' (LATE)'}
+                                  </span>
+                                </>
+                              )}
+                            </small>
+                          </td>
+                          <td>
+                            <small>
+                              {outpass.contactNumber}
+                              <br />
+                              <span className="text-muted">P: {outpass.parentNumber}</span>
+                            </small>
                           </td>
                           <td>
                             <span className={`badge ${getStatusBadge(outpass.status)}`}>
                               {outpass.status}
                             </span>
+                          </td>
+                          <td>
+                            {outpass.status === 'APPROVED' && (
+                              <button
+                                className="btn btn-sm btn-success"
+                                onClick={() => handleMarkDeparture(outpass.id)}
+                              >
+                                ✓ Mark Exit
+                              </button>
+                            )}
+                            {outpass.status === 'DEPARTED' && (
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleMarkReturn(outpass.id)}
+                              >
+                                ✓ Mark Return
+                              </button>
+                            )}
+                            {(outpass.status === 'COMPLETED' || outpass.status === 'OVERDUE') && (
+                              <span className="text-muted">Completed</span>
+                            )}
                           </td>
                         </tr>
                       ))}
@@ -160,21 +268,6 @@ const SecurityDashboard = () => {
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Instructions */}
-      <div className="row mt-4">
-        <div className="col-12">
-          <div className="alert alert-info">
-            <h6>📋 Instructions:</h6>
-            <ul className="mb-0">
-              <li><strong>Active Outpasses:</strong> All currently approved outpasses</li>
-              <li><strong>Today's Outpasses:</strong> Students leaving or returning today</li>
-              <li>Verify student identity before allowing exit</li>
-              <li>Contact numbers are provided for verification if needed</li>
-            </ul>
           </div>
         </div>
       </div>
