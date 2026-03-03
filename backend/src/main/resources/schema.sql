@@ -218,21 +218,17 @@ SET GLOBAL event_scheduler = ON;
 -- SAMPLE DATA (Optional - for testing)
 -- =====================================================
 
--- Insert sample warden
 INSERT INTO wardens (name, email, password_hash, hostel, phone) VALUES
-('Dr. Rajesh Kumar', 'rajesh.kumar@college.edu', '$2a$10$samplehashedpassword1234567890', 'Block A', '9876543210'),
-('Dr. Priya Sharma', 'priya.sharma@college.edu', '$2a$10$samplehashedpassword1234567891', 'Block B', '9876543211');
+('Ram', 'ram@mit.edu', '$2a$10$9Vw3Fdy7DyCXmAW7XG4dAO2lVc4Vayng/Xow2nAlMP4HTpzn/x9bW', 'NRI', '9876543210'),
+('Rajesh', 'rajesh@mit.edu', '$2a$10$u039FG6i7pE.nEjJtiI3O.dGZy2KhT18q0VOfdfnb7Oon.Ob9OMtu', 'Marutham', '9876543211');
 
--- Insert sample security guard
 INSERT INTO security_guards (name, email, password_hash, hostel, phone) VALUES
-('Ramesh Singh', 'ramesh.singh@college.edu', '$2a$10$samplehashedpassword1234567892', 'Block A', '9876543212'),
-('Suresh Patil', 'suresh.patil@college.edu', '$2a$10$samplehashedpassword1234567893', 'Block B', '9876543213');
+('muthu', 'muthu@mit.edu', '$2a$10$xhYbBcJFal8ildwL4OvvYOynu9RW/G7PunB9JiRmYagIM5s.x50G6', 'NRI', '9876543212'),
+('somu', 'somu@mit.edu', '$2a$10$Rq8cGIg4XvhQBVw/3Ui2z.afZJvr6LchIzACM2sOwCHHMDIkuKQP6', 'Marutham', '9876543213');
 
--- Insert sample students
 INSERT INTO students (name, email, password_hash, roll_no, department, hostel, room_number, contact_number, parent_number) VALUES
-('Amit Patel', 'amit.patel@student.college.edu', '$2a$10$samplehashedpassword1234567894', 'CS001', 'Computer Science', 'Block A', '101', '9876543214', '9876543215'),
-('Sneha Reddy', 'sneha.reddy@student.college.edu', '$2a$10$samplehashedpassword1234567895', 'CS002', 'Computer Science', 'Block B', '201', '9876543216', '9876543217'),
-('Vikram Desai', 'vikram.desai@student.college.edu', '$2a$10$samplehashedpassword1234567896', 'EC001', 'Electronics', 'Block A', '102', '9876543218', '9876543219');
+('Yuvi', 'yuvi@mit.edu', '$2a$10$H3Ag5JR2uJDmBLCLY1NOSeLsHKcNvMmBNQlYPMsZbSqBMGojXWhnK', '2024503541', 'CT', 'NRI', '101', '9876543214', '9876543215'),
+('Aravinth', 'arvi@mit.edu', '$2a$10$oE5clQ8xgcRrCzvcUabJoeupjQiNHr7MBR.n2ZQD0F0uJABDoJAa.', '2024503001', 'CT', 'Marutham', '201', '9876543216', '9876543217');
 
 -- =====================================================
 -- VIEWS (Optional - for easier data access)
