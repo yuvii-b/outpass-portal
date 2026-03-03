@@ -7,11 +7,15 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.outpass.portal.dto.request.ApproveOutpassRequest;
+import com.outpass.portal.dto.request.DeclineOutpassRequest;
 import com.outpass.portal.dto.response.ApiResponse;
 import com.outpass.portal.dto.response.OutpassResponse;
+import com.outpass.portal.dto.response.StudentOutpassStatsResponse;
 import com.outpass.portal.model.entity.Warden;
 import com.outpass.portal.repository.WardenRepository;
 import com.outpass.portal.security.UserPrincipal;
@@ -40,22 +44,24 @@ public class WardenController {
     @PutMapping("/outpass/{id}/approve")
     public ResponseEntity<ApiResponse<OutpassResponse>> approveOutpass(
             @PathVariable Long id,
+            @RequestBody(required = false) ApproveOutpassRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         Warden warden = wardenRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("Warden not found"));
         
-        OutpassResponse approved = outpassService.approveOutpass(id, warden.getHostel());
+        OutpassResponse approved = outpassService.approveOutpass(id, warden.getHostel(), warden.getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Outpass approved successfully", approved));
     }
 
     @PutMapping("/outpass/{id}/decline")
     public ResponseEntity<ApiResponse<OutpassResponse>> declineOutpass(
             @PathVariable Long id,
+            @RequestBody DeclineOutpassRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal) {
         Warden warden = wardenRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new RuntimeException("Warden not found"));
         
-        OutpassResponse declined = outpassService.declineOutpass(id, warden.getHostel());
+        OutpassResponse declined = outpassService.declineOutpass(id, warden.getHostel(), warden.getId(), request);
         return ResponseEntity.ok(ApiResponse.success("Outpass declined successfully", declined));
     }
 
@@ -67,6 +73,14 @@ public class WardenController {
         
         List<OutpassResponse> history = outpassService.getAllOutpassesByHostel(warden.getHostel());
         return ResponseEntity.ok(ApiResponse.success(history));
+    }
+
+    @GetMapping("/student/{studentId}/stats")
+    public ResponseEntity<ApiResponse<StudentOutpassStatsResponse>> getStudentStats(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserPrincipal userPrincipal) {
+        StudentOutpassStatsResponse stats = outpassService.getStudentStatistics(studentId);
+        return ResponseEntity.ok(ApiResponse.success(stats));
     }
 }
 

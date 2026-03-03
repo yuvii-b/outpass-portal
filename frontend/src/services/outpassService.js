@@ -33,18 +33,23 @@ const outpassService = {
     return response.data;
   },
 
-  approveOutpass: async (id) => {
-    const response = await api.put(`/warden/outpass/${id}/approve`);
+  approveOutpass: async (id, data = {}) => {
+    const response = await api.put(`/warden/outpass/${id}/approve`, data);
     return response.data;
   },
 
-  declineOutpass: async (id) => {
-    const response = await api.put(`/warden/outpass/${id}/decline`);
+  declineOutpass: async (id, data) => {
+    const response = await api.put(`/warden/outpass/${id}/decline`, data);
     return response.data;
   },
 
   getWardenHistory: async () => {
     const response = await api.get('/warden/outpass/history');
+    return response.data;
+  },
+
+  getStudentStats: async (studentId) => {
+    const response = await api.get(`/warden/student/${studentId}/stats`);
     return response.data;
   },
 

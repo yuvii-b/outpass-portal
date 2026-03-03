@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.outpass.portal.dto.request.ApproveOutpassRequest;
+import com.outpass.portal.dto.request.DeclineOutpassRequest;
 import com.outpass.portal.dto.request.OutpassRequest;
 import com.outpass.portal.dto.response.OutpassResponse;
+import com.outpass.portal.dto.response.StudentOutpassStatsResponse;
 import com.outpass.portal.model.entity.Outpass;
 import com.outpass.portal.model.entity.Student;
 import com.outpass.portal.model.enums.OutpassStatus;
@@ -98,7 +101,7 @@ public class OutpassService {
     }
 
     @Transactional
-    public OutpassResponse approveOutpass(Long outpassId, String wardenHostel) {
+    public OutpassResponse approveOutpass(Long outpassId, String wardenHostel, Long wardenId, ApproveOutpassRequest request) {
         Outpass outpass = outpassRepository.findById(outpassId)
                 .orElseThrow(() -> new RuntimeException("Outpass not found"));
 
@@ -111,12 +114,15 @@ public class OutpassService {
         }
 
         outpass.setStatus(OutpassStatus.APPROVED);
+        outpass.setWardenComments(request != null ? request.getComments() : null);
+        outpass.setProcessedBy(wardenId);
+        outpass.setProcessedAt(LocalDateTime.now());
         Outpass updated = outpassRepository.save(outpass);
         return mapToResponse(updated);
     }
 
     @Transactional
-    public OutpassResponse declineOutpass(Long outpassId, String wardenHostel) {
+    public OutpassResponse declineOutpass(Long outpassId, String wardenHostel, Long wardenId, DeclineOutpassRequest request) {
         Outpass outpass = outpassRepository.findById(outpassId)
                 .orElseThrow(() -> new RuntimeException("Outpass not found"));
 
@@ -129,6 +135,10 @@ public class OutpassService {
         }
 
         outpass.setStatus(OutpassStatus.DECLINED);
+        outpass.setDeclineReason(request.getDeclineReason());
+        outpass.setWardenComments(request.getComments());
+        outpass.setProcessedBy(wardenId);
+        outpass.setProcessedAt(LocalDateTime.now());
         Outpass updated = outpassRepository.save(outpass);
         return mapToResponse(updated);
     }
@@ -192,6 +202,7 @@ public class OutpassService {
     private OutpassResponse mapToResponse(Outpass outpass) {
         return OutpassResponse.builder()
                 .id(outpass.getId())
+                .studentId(outpass.getStudent().getId())
                 .name(outpass.getName())
                 .rollNo(outpass.getRollNo())
                 .department(outpass.getDepartment())
@@ -209,6 +220,10 @@ public class OutpassService {
                 .departureVerifiedBy(outpass.getDepartureVerifiedBy())
                 .returnVerifiedBy(outpass.getReturnVerifiedBy())
                 .isLateReturn(outpass.getIsLateReturn())
+                .declineReason(outpass.getDeclineReason())
+                .wardenComments(outpass.getWardenComments())
+                .processedBy(outpass.getProcessedBy())
+                .processedAt(outpass.getProcessedAt())
                 .createdAt(outpass.getCreatedAt())
                 .updatedAt(outpass.getUpdatedAt())
                 .build();
@@ -281,6 +296,95 @@ public class OutpassService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public StudentOutpassStatsResponse getStudentStatistics(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        List<Outpass> allOutpasses = outpassRepository.findByStudentIdOrderByCreatedAtDesc(studentId);
+
+        long totalOutpasses = allOutpasses.size();
+        long totalApproved = allOutpasses.stream()
+                .filter(o -> o.getStatus() == OutpassStatus.APPROVED || 
+                            o.getStatus() == OutpassStatus.DEPARTED ||
+                            o.getStatus() == OutpassStatus.COMPLETED ||
+                            o.getStatus() == OutpassStatus.OVERDUE)
+                .count();
+        long totalDeclined = allOutpasses.stream()
+                .filter(o -> o.getStatus() == OutpassStatus.DECLINED)
+                .count();
+        long totalCompleted = allOutpasses.stream()
+                .filter(o -> o.getStatus() == OutpassStatus.COMPLETED)
+                .count();
+        long totalOverdue = allOutpasses.stream()
+                .filter(o -> o.getStatus() == OutpassStatus.OVERDUE)
+                .count();
+        long lateReturns = allOutpasses.stream()
+                .filter(o -> Boolean.TRUE.equals(o.getIsLateReturn()))
+                .count();
+
+        // Current status
+        long currentlyActive = allOutpasses.stream()
+                .filter(o -> o.getStatus() == OutpassStatus.APPROVED || o.getStatus() == OutpassStatus.DEPARTED)
+                .count();
+        boolean hasOverdueOutpass = allOutpasses.stream()
+                .anyMatch(o -> o.getStatus() == OutpassStatus.OVERDUE);
+
+        // Rates
+        double approvalRate = totalOutpasses > 0 ? (totalApproved * 100.0 / totalOutpasses) : 0.0;
+        double onTimeCompletionRate = totalCompleted > 0 ? 
+            ((totalCompleted - lateReturns) * 100.0 / totalCompleted) : 100.0;
+
+        // Recent activity
+        String lastOutpassDate = null;
+        String lastOutpassStatus = null;
+        if (!allOutpasses.isEmpty()) {
+            Outpass lastOutpass = allOutpasses.get(0);
+            lastOutpassDate = lastOutpass.getCreatedAt().toString();
+            lastOutpassStatus = lastOutpass.getStatus().toString();
+        }
+
+        // Risk assessment
+        boolean hasActiveOutpass = currentlyActive > 0;
+        int overdueCount = (int) totalOverdue;
+        String riskLevel = calculateRiskLevel(lateReturns, overdueCount, totalOutpasses);
+
+        return StudentOutpassStatsResponse.builder()
+                .studentId(student.getId())
+                .name(student.getName())
+                .rollNo(student.getRollNo())
+                .department(student.getDepartment())
+                .hostel(student.getHostel())
+                .totalOutpasses(totalOutpasses)
+                .totalApproved(totalApproved)
+                .totalDeclined(totalDeclined)
+                .totalCompleted(totalCompleted)
+                .totalOverdue(totalOverdue)
+                .currentlyActive(currentlyActive)
+                .hasOverdueOutpass(hasOverdueOutpass)
+                .lateReturns(lateReturns)
+                .approvalRate(Math.round(approvalRate * 10.0) / 10.0)
+                .onTimeCompletionRate(Math.round(onTimeCompletionRate * 10.0) / 10.0)
+                .lastOutpassDate(lastOutpassDate)
+                .lastOutpassStatus(lastOutpassStatus)
+                .hasActiveOutpass(hasActiveOutpass)
+                .overdueCount(overdueCount)
+                .riskLevel(riskLevel)
+                .build();
+    }
+
+    private String calculateRiskLevel(long lateReturns, int overdueCount, long totalOutpasses) {
+        if (totalOutpasses == 0) return "LOW";
+        
+        if (overdueCount > 0 || lateReturns >= 3) {
+            return "HIGH";
+        } else if (lateReturns > 0) {
+            return "MEDIUM";
+        }
+        return "LOW";
+    }
 }
+
 
 

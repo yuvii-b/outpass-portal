@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OutpassResponse {
     private Long id;
+    private Long studentId;
     private String name;
     private String rollNo;
     private String department;
@@ -32,6 +33,10 @@ public class OutpassResponse {
     private Long departureVerifiedBy;
     private Long returnVerifiedBy;
     private Boolean isLateReturn;
+    private String declineReason;
+    private String wardenComments;
+    private Long processedBy;
+    private LocalDateTime processedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

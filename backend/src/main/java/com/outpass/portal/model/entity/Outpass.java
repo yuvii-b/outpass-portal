@@ -111,6 +111,18 @@ public class Outpass {
     @Builder.Default
     private Boolean isLateReturn = false;
 
+    @Column(name = "decline_reason", length = 500)
+    private String declineReason;
+
+    @Column(name = "warden_comments", length = 500)
+    private String wardenComments;
+
+    @Column(name = "processed_by")
+    private Long processedBy;
+
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

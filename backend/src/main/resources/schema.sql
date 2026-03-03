@@ -117,6 +117,10 @@ CREATE TABLE outpasses (
     departure_verified_by BIGINT NULL,
     return_verified_by BIGINT NULL,
     is_late_return BOOLEAN DEFAULT FALSE,
+    decline_reason VARCHAR(500) NULL,
+    warden_comments VARCHAR(500) NULL,
+    processed_by BIGINT NULL,
+    processed_at DATETIME NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 

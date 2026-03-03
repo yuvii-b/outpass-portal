@@ -8,6 +8,7 @@ const OutpassHistory = () => {
   const [outpasses, setOutpasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
+  const [expandedRow, setExpandedRow] = useState(null);
 
   useEffect(() => {
     fetchOutpasses();
@@ -106,24 +107,67 @@ const OutpassHistory = () => {
                         <th>Contact</th>
                         <th>Status</th>
                         <th>Created</th>
+                        <th>Details</th>
                       </tr>
                     </thead>
                     <tbody>
                       {filteredOutpasses.map((outpass) => (
-                        <tr key={outpass.id}>
-                          <td>{outpass.id}</td>
-                          <td>{outpass.placeOfVisit}</td>
-                          <td>{format(new Date(outpass.date), 'dd/MM/yyyy HH:mm')}</td>
-                          <td>{format(new Date(outpass.returnDate), 'dd/MM/yyyy HH:mm')}</td>
-                          <td>{outpass.noOfDays}</td>
-                          <td>{outpass.contactNumber}</td>
-                          <td>
-                            <span className={`badge ${getStatusBadge(outpass.status)}`}>
-                              {outpass.status}
-                            </span>
-                          </td>
-                          <td>{format(new Date(outpass.createdAt), 'dd/MM/yyyy')}</td>
-                        </tr>
+                        <>
+                          <tr key={outpass.id}>
+                            <td>{outpass.id}</td>
+                            <td>{outpass.placeOfVisit}</td>
+                            <td>{format(new Date(outpass.date), 'dd/MM/yyyy HH:mm')}</td>
+                            <td>{format(new Date(outpass.returnDate), 'dd/MM/yyyy HH:mm')}</td>
+                            <td>{outpass.noOfDays}</td>
+                            <td>{outpass.contactNumber}</td>
+                            <td>
+                              <span className={`badge ${getStatusBadge(outpass.status)}`}>
+                                {outpass.status}
+                              </span>
+                              {outpass.isLateReturn && (
+                                <span className="badge bg-warning text-dark ms-1" title="Late Return">
+                                  🕒
+                                </span>
+                              )}
+                            </td>
+                            <td>{format(new Date(outpass.createdAt), 'dd/MM/yyyy')}</td>
+                            <td>
+                              {(outpass.declineReason || outpass.wardenComments) && (
+                                <button
+                                  className="btn btn-sm btn-outline-info"
+                                  onClick={() => setExpandedRow(expandedRow === outpass.id ? null : outpass.id)}
+                                >
+                                  {expandedRow === outpass.id ? '▲' : '▼'}
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                          {expandedRow === outpass.id && (outpass.declineReason || outpass.wardenComments) && (
+                            <tr>
+                              <td colSpan="9" className="bg-light">
+                                <div className="p-3">
+                                  {outpass.declineReason && (
+                                    <div className="mb-2">
+                                      <strong className="text-danger">❌ Decline Reason:</strong>
+                                      <p className="mb-0 mt-1">{outpass.declineReason}</p>
+                                    </div>
+                                  )}
+                                  {outpass.wardenComments && (
+                                    <div>
+                                      <strong className="text-primary">💬 Warden Comments:</strong>
+                                      <p className="mb-0 mt-1">{outpass.wardenComments}</p>
+                                    </div>
+                                  )}
+                                  {outpass.processedAt && (
+                                    <small className="text-muted">
+                                      Processed on: {format(new Date(outpass.processedAt), 'dd/MM/yyyy HH:mm')}
+                                    </small>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       ))}
                     </tbody>
                   </table>
