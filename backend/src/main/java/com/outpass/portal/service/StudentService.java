@@ -1,5 +1,6 @@
 package com.outpass.portal.service;
 
+import com.outpass.portal.dto.request.StudentProfileUpdateRequest;
 import com.outpass.portal.dto.response.StudentProfileResponse;
 import com.outpass.portal.model.entity.Student;
 import com.outpass.portal.repository.StudentRepository;
@@ -32,22 +33,15 @@ public class StudentService {
     }
 
     @Transactional
-    public StudentProfileResponse updateProfile(Long studentId, StudentProfileResponse updateRequest) {
+    public StudentProfileResponse updateProfile(Long studentId, StudentProfileUpdateRequest updateRequest) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        if (updateRequest.getName() != null) {
-            student.setName(updateRequest.getName());
-        }
-        if (updateRequest.getContactNumber() != null) {
-            student.setContactNumber(updateRequest.getContactNumber());
-        }
-        if (updateRequest.getParentNumber() != null) {
-            student.setParentNumber(updateRequest.getParentNumber());
-        }
-        if (updateRequest.getRoomNumber() != null) {
-            student.setRoomNumber(updateRequest.getRoomNumber());
-        }
+        // Update only editable fields
+        student.setHostel(updateRequest.getHostel());
+        student.setRoomNumber(updateRequest.getRoomNumber());
+        student.setContactNumber(updateRequest.getContactNumber());
+        student.setParentNumber(updateRequest.getParentNumber());
 
         Student updated = studentRepository.save(student);
         return getProfile(updated.getId());

@@ -11,6 +11,7 @@ import Register from '../pages/auth/Register';
 import StudentDashboard from '../pages/student/Dashboard';
 import CreateOutpass from '../pages/student/CreateOutpass';
 import OutpassHistory from '../pages/student/OutpassHistory';
+import EditProfile from '../pages/student/EditProfile';
 
 // Warden Pages
 import WardenDashboard from '../pages/warden/Dashboard';
@@ -72,6 +73,14 @@ const AppRoutes = () => {
           element={
             <PrivateRoute allowedRoles={[ROLES.STUDENT]}>
               <OutpassHistory />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/student/edit-profile"
+          element={
+            <PrivateRoute allowedRoles={[ROLES.STUDENT]}>
+              <EditProfile />
             </PrivateRoute>
           }
         />

@@ -1,6 +1,7 @@
 package com.outpass.portal.controller;
 
 import com.outpass.portal.dto.request.OutpassRequest;
+import com.outpass.portal.dto.request.StudentProfileUpdateRequest;
 import com.outpass.portal.dto.response.ApiResponse;
 import com.outpass.portal.dto.response.OutpassResponse;
 import com.outpass.portal.dto.response.StudentProfileResponse;
@@ -33,7 +34,7 @@ public class StudentController {
     @PutMapping("/profile")
     public ResponseEntity<ApiResponse<StudentProfileResponse>> updateProfile(
             @AuthenticationPrincipal UserPrincipal userPrincipal,
-            @Valid @RequestBody StudentProfileResponse updateRequest) {
+            @Valid @RequestBody StudentProfileUpdateRequest updateRequest) {
         StudentProfileResponse updated = studentService.updateProfile(userPrincipal.getId(), updateRequest);
         return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", updated));
     }

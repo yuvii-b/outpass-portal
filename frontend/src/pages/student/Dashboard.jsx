@@ -57,7 +57,12 @@ const StudentDashboard = () => {
           <div className="col-md-12">
             <div className="card">
               <div className="card-body">
-                <h5 className="card-title">Profile Information</h5>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h5 className="card-title mb-0">Profile Information</h5>
+                  <Link to="/student/edit-profile" className="btn btn-sm btn-outline-primary">
+                    <i className="bi bi-pencil-square"></i> Edit Profile
+                  </Link>
+                </div>
                 <div className="row">
                   <div className="col-md-3">
                     <p className="mb-1"><strong>Name:</strong> {profile.name}</p>
