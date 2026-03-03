@@ -43,7 +43,7 @@ const AppRoutes = () => {
   };
 
   return (
-    <Router>
+    <Router basename="/outpass-portal">
       <Navbar />
       <Routes>
         {/* Public Routes */}
