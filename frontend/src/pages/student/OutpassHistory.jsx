@@ -3,6 +3,8 @@ import outpassService from '../../services/outpassService';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHistory, faBook, faHourglass, faCheck, faTimes, faTimesCircle, faClock, faComment } from '@fortawesome/free-solid-svg-icons';
 
 const OutpassHistory = () => {
   const [outpasses, setOutpasses] = useState([]);
@@ -46,40 +48,47 @@ const OutpassHistory = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-5">
       <div className="row mb-4">
         <div className="col-12">
-          <h2>Outpass History</h2>
+          <h2 className="mb-1" style={{ fontWeight: '700', color: 'var(--color-primary)' }}>
+            <FontAwesomeIcon icon={faHistory} /> Outpass History
+          </h2>
+          <p className="text-muted">View and track all your outpass requests</p>
         </div>
       </div>
 
       {/* Filter Buttons */}
-      <div className="row mb-3">
+      <div className="row mb-4">
         <div className="col-12">
-          <div className="btn-group" role="group">
+          <div className="btn-group" role="group" style={{ flexWrap: 'wrap' }}>
             <button
               className={`btn ${filter === 'ALL' ? 'btn-primary' : 'btn-outline-primary'}`}
               onClick={() => setFilter('ALL')}
+              style={{ fontWeight: '600' }}
             >
-              All
+              <FontAwesomeIcon icon={faBook} /> All
             </button>
             <button
               className={`btn ${filter === 'PENDING' ? 'btn-warning' : 'btn-outline-warning'}`}
               onClick={() => setFilter('PENDING')}
+              style={{ fontWeight: '600', color: filter === 'PENDING' ? 'white' : 'var(--color-warning)' }}
             >
-              Pending
+              <FontAwesomeIcon icon={faHourglass} /> Pending
             </button>
             <button
               className={`btn ${filter === 'APPROVED' ? 'btn-success' : 'btn-outline-success'}`}
               onClick={() => setFilter('APPROVED')}
+              style={{ fontWeight: '600' }}
             >
-              Approved
+              <FontAwesomeIcon icon={faCheck} /> Approved
             </button>
             <button
               className={`btn ${filter === 'DECLINED' ? 'btn-danger' : 'btn-outline-danger'}`}
               onClick={() => setFilter('DECLINED')}
+              style={{ fontWeight: '600' }}
             >
-              Declined
+              <FontAwesomeIcon icon={faTimes} /> Declined
             </button>
           </div>
         </div>
@@ -88,7 +97,7 @@ const OutpassHistory = () => {
       {/* Outpass Table */}
       <div className="row">
         <div className="col-12">
-          <div className="card">
+          <div className="card shadow-sm">
             <div className="card-body">
               {filteredOutpasses.length === 0 ? (
                 <div className="text-center py-5">
@@ -126,7 +135,7 @@ const OutpassHistory = () => {
                               </span>
                               {outpass.isLateReturn && (
                                 <span className="badge bg-warning text-dark ms-1" title="Late Return">
-                                  🕒
+                                  <FontAwesomeIcon icon={faClock} />
                                 </span>
                               )}
                             </td>
@@ -148,13 +157,13 @@ const OutpassHistory = () => {
                                 <div className="p-3">
                                   {outpass.declineReason && (
                                     <div className="mb-2">
-                                      <strong className="text-danger">❌ Decline Reason:</strong>
+                                      <strong className="text-danger"><FontAwesomeIcon icon={faTimesCircle} /> Decline Reason:</strong>
                                       <p className="mb-0 mt-1">{outpass.declineReason}</p>
                                     </div>
                                   )}
                                   {outpass.wardenComments && (
                                     <div>
-                                      <strong className="text-primary">💬 Warden Comments:</strong>
+                                      <strong className="text-primary"><FontAwesomeIcon icon={faComment} /> Warden Comments:</strong>
                                       <p className="mb-0 mt-1">{outpass.wardenComments}</p>
                                     </div>
                                   )}

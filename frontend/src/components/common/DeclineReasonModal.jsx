@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 const DeclineReasonModal = ({ show, onClose, onSubmit, processingId }) => {
   const [reason, setReason] = useState('');
@@ -37,11 +39,11 @@ const DeclineReasonModal = ({ show, onClose, onSubmit, processingId }) => {
   if (!show) return null;
 
   return (
-    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header bg-danger text-white">
-            <h5 className="modal-title">❌ Decline Outpass Request</h5>
+        <div className="modal-content" style={{ borderRadius: 'var(--border-radius-lg)' }}>
+          <div className="modal-header" style={{ background: 'var(--color-danger)', color: 'white', borderRadius: 'var(--border-radius-lg) var(--border-radius-lg) 0 0' }}>
+            <h5 className="modal-title fw-bold"><FontAwesomeIcon icon={faTimesCircle} /> Decline Outpass Request</h5>
             <button
               type="button"
               className="btn-close btn-close-white"

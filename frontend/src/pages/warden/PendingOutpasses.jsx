@@ -6,6 +6,8 @@ import ApproveCommentsModal from '../../components/common/ApproveCommentsModal';
 import StudentStatsCard from '../../components/common/StudentStatsCard';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHourglass, faCheck, faCheckCircle, faChartBar } from '@fortawesome/free-solid-svg-icons';
 
 const PendingOutpasses = () => {
   const [outpasses, setOutpasses] = useState([]);
@@ -82,10 +84,12 @@ const PendingOutpasses = () => {
 
   return (
     <>
-      <div className="container mt-4">
+      <div className="container mt-4 mb-5">
         <div className="row mb-4">
           <div className="col-12">
-            <h2>Pending Outpass Requests</h2>
+            <h2 className="mb-1" style={{ fontWeight: '700', color: 'var(--color-primary)' }}>
+              <FontAwesomeIcon icon={faHourglass} /> Pending Outpass Requests
+            </h2>
             <p className="text-muted">Review and approve/decline student outpass requests</p>
           </div>
         </div>
@@ -103,7 +107,8 @@ const PendingOutpasses = () => {
             {outpasses.length === 0 ? (
               <div className="card">
                 <div className="card-body text-center py-5">
-                  <h4 className="text-muted">✅ No pending requests</h4>
+                  <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: '3rem', color: 'var(--color-success)' }} />
+                  <h4 className="text-muted mt-3">No pending requests</h4>
                   <p>All outpass requests have been processed</p>
                 </div>
               </div>
@@ -119,7 +124,7 @@ const PendingOutpasses = () => {
                           onClick={() => handleViewStats(outpass.studentId)}
                           title="View student track record"
                         >
-                          📊
+                          <FontAwesomeIcon icon={faChartBar} />
                         </button>
                       </div>
                       <div className="card-body">
@@ -148,7 +153,7 @@ const PendingOutpasses = () => {
                             {processingId === outpass.id ? (
                               <span className="spinner-border spinner-border-sm"></span>
                             ) : (
-                              '✓ Approve'
+                                <><FontAwesomeIcon icon={faCheck} /> Approve</>
                             )}
                           </button>
                           <button

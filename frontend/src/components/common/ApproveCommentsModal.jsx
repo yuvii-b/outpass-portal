@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 const ApproveCommentsModal = ({ show, onClose, onSubmit, processingId }) => {
   const [comments, setComments] = useState('');
@@ -18,11 +20,11 @@ const ApproveCommentsModal = ({ show, onClose, onSubmit, processingId }) => {
   if (!show) return null;
 
   return (
-    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+    <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
       <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header bg-success text-white">
-            <h5 className="modal-title">✓ Approve Outpass Request</h5>
+        <div className="modal-content" style={{ borderRadius: 'var(--border-radius-lg)' }}>
+          <div className="modal-header" style={{ background: 'var(--color-success)', color: 'white', borderRadius: 'var(--border-radius-lg) var(--border-radius-lg) 0 0' }}>
+            <h5 className="modal-title fw-bold"><FontAwesomeIcon icon={faCheckCircle} /> Approve Outpass Request</h5>
             <button
               type="button"
               className="btn-close btn-close-white"
@@ -65,6 +67,7 @@ const ApproveCommentsModal = ({ show, onClose, onSubmit, processingId }) => {
                 type="submit"
                 className="btn btn-success"
                 disabled={processingId}
+                style={{ fontWeight: '600', minWidth: '150px' }}
               >
                 {processingId ? (
                   <>
@@ -72,7 +75,7 @@ const ApproveCommentsModal = ({ show, onClose, onSubmit, processingId }) => {
                     Approving...
                   </>
                 ) : (
-                  '✓ Confirm Approval'
+                  <><FontAwesomeIcon icon={faCheckCircle} /> Confirm Approval</>
                 )}
               </button>
             </div>

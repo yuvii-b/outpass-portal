@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import api from '../../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartBar, faTimes, faClock } from '@fortawesome/free-solid-svg-icons';
 
 const StudentStatsCard = ({ studentId, onClose }) => {
   const [stats, setStats] = useState(null);
@@ -44,10 +46,19 @@ const StudentStatsCard = ({ studentId, onClose }) => {
   if (!stats) return null;
 
   return (
-    <div className="card mb-3 border-primary">
-      <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-        <h6 className="mb-0">📊 Student Track Record</h6>
-        <button className="btn btn-sm btn-light" onClick={onClose}>✕</button>
+    <div className="card mb-3 shadow-sm" style={{ border: '2px solid var(--color-primary)' }}>
+      <div className="card-header d-flex justify-content-between align-items-center">
+        <h6 className="mb-0 fw-bold"><FontAwesomeIcon icon={faChartBar} /> Student Track Record</h6>
+        <button 
+          className="btn btn-sm" 
+          onClick={onClose}
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.2)', 
+            color: 'white', 
+            fontWeight: '600',
+            border: 'none'
+          }}
+        ><FontAwesomeIcon icon={faTimes} /></button>
       </div>
       <div className="card-body">
         <div className="row g-2">
@@ -130,7 +141,7 @@ const StudentStatsCard = ({ studentId, onClose }) => {
             )}
             {stats.lateReturns > 0 && (
               <div className="alert alert-info py-2 mb-2">
-                <small>🕒 {stats.lateReturns} late return(s) in history</small>
+                <small><FontAwesomeIcon icon={faClock} /> {stats.lateReturns} late return(s) in history</small>
               </div>
             )}
           </div>

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGraduationCap, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -59,14 +61,20 @@ const Register = () => {
     <div className="container mt-5 mb-5">
       <div className="row justify-content-center">
         <div className="col-md-8 col-lg-6">
-          <div className="card shadow">
+          <div className="card shadow-lg card-fade-in">
             <div className="card-body p-5">
-              <h2 className="text-center mb-4">🎓 Student Registration</h2>
+              <div className="text-center mb-4">
+                <FontAwesomeIcon icon={faGraduationCap} style={{ fontSize: '3rem', color: 'var(--color-primary)' }} />
+                <h2 className="mb-2" style={{ fontWeight: '700', color: 'var(--color-primary)' }}>
+                  Student Registration
+                </h2>
+                <p className="text-muted">Create your account to get started</p>
+              </div>
 
               <form onSubmit={handleSubmit}>
                 <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Full Name *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label">Full Name</label>
                     <input
                       type="text"
                       className="form-control"
@@ -77,8 +85,8 @@ const Register = () => {
                     />
                   </div>
 
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Email *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label">Email</label>
                     <input
                       type="email"
                       className="form-control"
@@ -91,8 +99,8 @@ const Register = () => {
                 </div>
 
                 <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Password *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label">Password</label>
                     <input
                       type="password"
                       className="form-control"
@@ -103,8 +111,8 @@ const Register = () => {
                     />
                   </div>
 
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Confirm Password *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label">Confirm Password</label>
                     <input
                       type="password"
                       className="form-control"
@@ -204,6 +212,7 @@ const Register = () => {
                   type="submit"
                   className="btn btn-primary w-100 mb-3"
                   disabled={loading}
+                  style={{ minHeight: '50px', fontSize: '1rem', fontWeight: '600' }}
                 >
                   {loading ? (
                     <>
@@ -211,14 +220,18 @@ const Register = () => {
                       Registering...
                     </>
                   ) : (
-                    'Register'
+                    <><FontAwesomeIcon icon={faArrowRight} /> Create Account</>
                   )}
                 </button>
 
-                <div className="text-center">
-                  <p className="mb-0">
+                <div className="text-center pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
+                  <p className="mb-0 text-muted">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-decoration-none">
+                    <Link 
+                      to="/login" 
+                      className="text-decoration-none fw-bold"
+                      style={{ color: 'var(--color-primary)' }}
+                    >
                       Login here
                     </Link>
                   </p>

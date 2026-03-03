@@ -3,6 +3,8 @@ import outpassService from '../../services/outpassService';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShieldAlt, faCheck, faDoorOpen, faCalendarDay, faSignOutAlt, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
 
 const SecurityDashboard = () => {
   const [approvedOutpasses, setApprovedOutpasses] = useState([]);
@@ -90,40 +92,42 @@ const SecurityDashboard = () => {
   const displayOutpasses = getDisplayOutpasses();
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-5">
       <div className="row mb-4">
         <div className="col-12">
-          <h2>Security Guard Dashboard</h2>
+          <h2 className="mb-1" style={{ fontWeight: '700', color: 'var(--color-primary)' }}>
+            <FontAwesomeIcon icon={faShieldAlt} /> Security Guard Dashboard
+          </h2>
           <p className="text-muted">Verify student entry and exit</p>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="row mb-4">
+      <div className="row mb-4 g-4">
         <div className="col-md-4">
-          <div className="card text-center bg-success text-white h-100 shadow">
-            <div className="card-body">
-              <h1 className="display-3">{approvedOutpasses.length}</h1>
-              <h5>Approved - Ready to Exit</h5>
-              <p className="mb-0">Awaiting departure verification</p>
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#48bb78', border: 'none' }}>
+            <div className="card-body p-4">
+              <h1 className="display-3" style={{ color: 'white', fontWeight: '700' }}>{approvedOutpasses.length}</h1>
+              <h5 style={{ color: 'white', fontWeight: '600' }}>Approved - Ready to Exit</h5>
+              <p className="mb-0" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Awaiting departure verification</p>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center bg-primary text-white h-100 shadow">
-            <div className="card-body">
-              <h1 className="display-3">{departedOutpasses.length}</h1>
-              <h5>Departed - Outside</h5>
-              <p className="mb-0">Awaiting return verification</p>
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#2d3748', border: 'none' }}>
+            <div className="card-body p-4">
+              <h1 className="display-3" style={{ color: 'white', fontWeight: '700' }}>{departedOutpasses.length}</h1>
+              <h5 style={{ color: 'white', fontWeight: '600' }}>Departed - Outside</h5>
+              <p className="mb-0" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>Awaiting return verification</p>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center bg-info text-white h-100 shadow">
-            <div className="card-body">
-              <h1 className="display-3">{todayOutpasses.length}</h1>
-              <h5>Today's Schedule</h5>
-              <p className="mb-0">All outpasses for today</p>
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#4299e1', border: 'none' }}>
+            <div className="card-body p-4">
+              <h1 className="display-3" style={{ color: 'white', fontWeight: '700' }}>{todayOutpasses.length}</h1>
+              <h5 style={{ color: 'white', fontWeight: '600' }}>Today's Schedule</h5>
+              <p className="mb-0" style={{ color: 'rgba(255, 255, 255, 0.9)' }}>All outpasses for today</p>
             </div>
           </div>
         </div>
@@ -138,7 +142,7 @@ const SecurityDashboard = () => {
                 className={`nav-link ${activeTab === 'approved' ? 'active' : ''}`}
                 onClick={() => setActiveTab('approved')}
               >
-                ✅ Ready to Exit ({approvedOutpasses.length})
+                <FontAwesomeIcon icon={faCheck} /> Ready to Exit ({approvedOutpasses.length})
               </button>
             </li>
             <li className="nav-item">
@@ -146,7 +150,7 @@ const SecurityDashboard = () => {
                 className={`nav-link ${activeTab === 'departed' ? 'active' : ''}`}
                 onClick={() => setActiveTab('departed')}
               >
-                🚪 Outside - Pending Return ({departedOutpasses.length})
+                <FontAwesomeIcon icon={faDoorOpen} /> Outside - Pending Return ({departedOutpasses.length})
               </button>
             </li>
             <li className="nav-item">
@@ -154,7 +158,7 @@ const SecurityDashboard = () => {
                 className={`nav-link ${activeTab === 'today' ? 'active' : ''}`}
                 onClick={() => setActiveTab('today')}
               >
-                📅 Today's Schedule ({todayOutpasses.length})
+                <FontAwesomeIcon icon={faCalendarDay} /> Today's Schedule ({todayOutpasses.length})
               </button>
             </li>
           </ul>
@@ -213,7 +217,7 @@ const SecurityDashboard = () => {
                                 <>
                                   <br />
                                   <span className="text-success">
-                                    ✓ Left: {format(new Date(outpass.actualDepartureTime), 'dd/MM HH:mm')}
+                                    <FontAwesomeIcon icon={faCheck} /> Left: {format(new Date(outpass.actualDepartureTime), 'dd/MM HH:mm')}
                                   </span>
                                 </>
                               )}
@@ -221,7 +225,7 @@ const SecurityDashboard = () => {
                                 <>
                                   <br />
                                   <span className={outpass.isLateReturn ? 'text-danger' : 'text-success'}>
-                                    ✓ Returned: {format(new Date(outpass.actualReturnTime), 'dd/MM HH:mm')}
+                                    <FontAwesomeIcon icon={faCheck} /> Returned: {format(new Date(outpass.actualReturnTime), 'dd/MM HH:mm')}
                                     {outpass.isLateReturn && ' (LATE)'}
                                   </span>
                                 </>

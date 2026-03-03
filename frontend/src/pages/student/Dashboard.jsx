@@ -4,6 +4,8 @@ import outpassService from '../../services/outpassService';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChartBar, faUser, faPencilAlt, faFileAlt, faClipboardList, faChartPie, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const StudentDashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -47,10 +49,13 @@ const StudentDashboard = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mt-4">
-      <div className="row">
+    <div className="container mt-4 mb-5">
+      <div className="row mb-4">
         <div className="col-12">
-          <h2 className="mb-4">Student Dashboard</h2>
+          <h2 className="mb-1" style={{ fontWeight: '700', color: 'var(--color-primary)' }}>
+            <FontAwesomeIcon icon={faChartBar} /> Student Dashboard
+          </h2>
+          <p className="text-muted">Welcome back! Manage your outpass requests</p>
         </div>
       </div>
 
@@ -58,12 +63,14 @@ const StudentDashboard = () => {
       {profile && (
         <div className="row mb-4">
           <div className="col-md-12">
-            <div className="card">
+            <div className="card shadow-sm">
               <div className="card-body">
                 <div className="d-flex justify-content-between align-items-center mb-3">
-                  <h5 className="card-title mb-0">Profile Information</h5>
+                  <h5 className="card-title mb-0" style={{ color: 'var(--color-primary)', fontWeight: '600' }}>
+                    <FontAwesomeIcon icon={faUser} /> Profile Information
+                  </h5>
                   <Link to="/student/edit-profile" className="btn btn-sm btn-outline-primary">
-                    <i className="bi bi-pencil-square"></i> Edit Profile
+                    <FontAwesomeIcon icon={faPencilAlt} /> Edit Profile
                   </Link>
                 </div>
                 <div className="row">
@@ -91,35 +98,35 @@ const StudentDashboard = () => {
       )}
 
       {/* Quick Actions */}
-      <div className="row mb-4">
+      <div className="row mb-4 g-4">
         <div className="col-md-4">
-          <div className="card text-center bg-primary text-white h-100">
-            <div className="card-body">
-              <h1 className="display-4">📝</h1>
-              <h5>Create New Outpass</h5>
-              <Link to="/student/create-outpass" className="btn btn-light mt-3">
-                Create Outpass
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#2d3748', border: 'none', transition: 'all 0.2s' }}>
+            <div className="card-body d-flex flex-column justify-content-center p-4">
+              <FontAwesomeIcon icon={faFileAlt} style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1rem' }} />
+              <h5 className="mb-3 fw-bold" style={{ color: 'white' }}>Create New Outpass</h5>
+              <Link to="/student/create-outpass" className="btn btn-light mt-2 fw-semibold">
+                <FontAwesomeIcon icon={faPencilAlt} /> Create Now
               </Link>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center bg-info text-white h-100">
-            <div className="card-body">
-              <h1 className="display-4">📋</h1>
-              <h5>View All History</h5>
-              <Link to="/student/history" className="btn btn-light mt-3">
-                View History
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#4299e1', border: 'none', transition: 'all 0.2s' }}>
+            <div className="card-body d-flex flex-column justify-content-center p-4">
+              <FontAwesomeIcon icon={faClipboardList} style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1rem' }} />
+              <h5 className="mb-3 fw-bold" style={{ color: 'white' }}>View All History</h5>
+              <Link to="/student/history" className="btn btn-light mt-2 fw-semibold">
+                <FontAwesomeIcon icon={faClipboardList} /> Open History
               </Link>
             </div>
           </div>
         </div>
         <div className="col-md-4">
-          <div className="card text-center bg-success text-white h-100">
-            <div className="card-body">
-              <h1 className="display-4">📊</h1>
-              <h5>Outpass Statistics</h5>
-              <p className="mb-0 mt-3">Total: {recentOutpasses.length}</p>
+          <div className="card text-center h-100 shadow-sm" style={{ backgroundColor: '#48bb78', border: 'none', transition: 'all 0.2s' }}>
+            <div className="card-body d-flex flex-column justify-content-center p-4">
+              <FontAwesomeIcon icon={faChartPie} style={{ fontSize: '3.5rem', color: 'white', marginBottom: '1rem' }} />
+              <h5 className="mb-3 fw-bold" style={{ color: 'white' }}>Outpass Statistics</h5>
+              <p className="mb-0 mt-2" style={{ fontSize: '1.2rem', fontWeight: '600', color: 'white' }}>Total: {recentOutpasses.length}</p>
             </div>
           </div>
         </div>
@@ -128,11 +135,11 @@ const StudentDashboard = () => {
       {/* Recent Outpasses */}
       <div className="row">
         <div className="col-12">
-          <div className="card">
+          <div className="card shadow-sm">
             <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">Recent Outpass Requests</h5>
+              <h5 className="mb-0"><FontAwesomeIcon icon={faClipboardList} /> Recent Outpass Requests</h5>
               <Link to="/student/history" className="btn btn-sm btn-primary">
-                View All
+                View All <FontAwesomeIcon icon={faArrowRight} />
               </Link>
             </div>
             <div className="card-body">

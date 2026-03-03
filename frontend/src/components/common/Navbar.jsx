@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGraduationCap, faChartBar, faPlus, faHistory, faHourglass, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -25,28 +27,32 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-      <div className="container-fluid">
+    <nav className="navbar navbar-expand-lg navbar-dark sticky-top" style={{ 
+      background: 'linear-gradient(135deg, #1a202c 0%, #2d3748 100%)',
+      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+    }}>
+      <div className="container-fluid px-4">
         <Link className="navbar-brand fw-bold" to={getDashboardLink()}>
-          🎓 Outpass Portal
+          <FontAwesomeIcon icon={faGraduationCap} style={{ fontSize: '1.3rem', marginRight: '0.5rem' }} /> Outpass Portal
         </Link>
         
         <button
-          className="navbar-toggler"
+          className="navbar-toggler border-0"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
+          style={{ padding: '0.5rem' }}
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
+          <ul className="navbar-nav ms-auto align-items-lg-center">
             {isAuthenticated ? (
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to={getDashboardLink()}>
-                    Dashboard
+                    <FontAwesomeIcon icon={faChartBar} style={{ marginRight: '0.5rem' }} /> Dashboard
                   </Link>
                 </li>
                 
@@ -54,12 +60,12 @@ const Navbar = () => {
                   <>
                     <li className="nav-item">
                       <Link className="nav-link" to="/student/create-outpass">
-                        Create Outpass
+                        <FontAwesomeIcon icon={faPlus} style={{ marginRight: '0.5rem' }} /> Create Outpass
                       </Link>
                     </li>
                     <li className="nav-item">
                       <Link className="nav-link" to="/student/history">
-                        History
+                        <FontAwesomeIcon icon={faHistory} style={{ marginRight: '0.5rem' }} /> History
                       </Link>
                     </li>
                   </>
@@ -68,19 +74,37 @@ const Navbar = () => {
                 {user.role === 'WARDEN' && (
                   <li className="nav-item">
                     <Link className="nav-link" to="/warden/pending">
-                      Pending Requests
+                      <FontAwesomeIcon icon={faHourglass} style={{ marginRight: '0.5rem' }} /> Pending Requests
                     </Link>
                   </li>
                 )}
 
                 <li className="nav-item">
-                  <span className="nav-link">
-                    <strong>{user.email}</strong> ({user.role})
+                  <span className="nav-link" style={{ 
+                    background: 'rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '0.375rem',
+                    padding: '0.5rem 1rem'
+                  }}>
+                    <strong style={{ color: 'white' }}>{user.email}</strong>
+                    <span style={{ 
+                      marginLeft: '0.5rem', 
+                      padding: '0.2rem 0.5rem', 
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.8rem',
+                      fontWeight: '600'
+                    }}>
+                      {user.role.replace('_', ' ')}
+                    </span>
                   </span>
                 </li>
                 
-                <li className="nav-item">
-                  <button className="btn btn-outline-light btn-sm ms-2" onClick={handleLogout}>
+                <li className="nav-item ms-2">
+                  <button 
+                    className="btn btn-outline-light btn-sm" 
+                    onClick={handleLogout}
+                    style={{ fontWeight: '600' }}
+                  >
                     Logout
                   </button>
                 </li>
@@ -93,7 +117,15 @@ const Navbar = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/register">
+                  <Link 
+                    className="nav-link" 
+                    to="/register"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '0.375rem',
+                      fontWeight: '600'
+                    }}
+                  >
                     Register
                   </Link>
                 </li>

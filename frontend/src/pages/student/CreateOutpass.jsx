@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import outpassService from '../../services/outpassService';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileAlt, faCalendarAlt, faMapMarkerAlt, faPhone, faUsers, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const CreateOutpass = () => {
   const [formData, setFormData] = useState({
@@ -79,44 +81,55 @@ const CreateOutpass = () => {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-5">
       <div className="row justify-content-center">
-        <div className="col-md-8">
-          <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h4 className="mb-0">Create New Outpass Request</h4>
+        <div className="col-md-10 col-lg-8">
+          <div className="card shadow-lg card-fade-in">
+            <div className="card-header">
+              <h4 className="mb-0"><FontAwesomeIcon icon={faFileAlt} /> Create New Outpass Request</h4>
             </div>
             <div className="card-body p-4">
+              <div className="alert alert-info mb-4">
+                <strong><FontAwesomeIcon icon={faCalendarAlt} /> Quick Tip:</strong> Click the calendar icon to easily select dates and times. 
+                Make sure to return on time to maintain a good track record!
+              </div>
+
               <form onSubmit={handleSubmit}>
                 <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Date of Leaving *</label>
-                    <input
-                      type="datetime-local"
-                      className="form-control"
-                      name="date"
-                      value={formData.date}
-                      onChange={handleChange}
-                      min={getCurrentDateTime()}
-                      required
-                    />
+                  <div className="col-md-6 mb-4">
+                    <div className="date-input-group">
+                      <label className="form-label">Date of Leaving</label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        name="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        min={getCurrentDateTime()}
+                        required
+                      />
+                      <small className="text-muted">Select when you plan to leave</small>
+                    </div>
                   </div>
 
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Return Date *</label>
-                    <input
-                      type="datetime-local"
-                      className="form-control"
-                      name="returnDate"
-                      value={formData.returnDate}
-                      onChange={handleChange}
-                      min={formData.date || getCurrentDateTime()}
-                      required
-                    />
+                  <div className="col-md-6 mb-4">
+                    <div className="date-input-group">
+                      <label className="form-label">Return Date</label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        name="returnDate"
+                        value={formData.returnDate}
+                        onChange={handleChange}
+                        min={formData.date || getCurrentDateTime()}
+                        required
+                      />
+                      <small className="text-muted">Select when you'll be back</small>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mb-3">
+                <div className="mb-4">
                   <label className="form-label">Number of Days</label>
                   <input
                     type="number"
@@ -125,26 +138,31 @@ const CreateOutpass = () => {
                     value={formData.noOfDays}
                     readOnly
                     disabled
+                    style={{ 
+                      background: 'var(--color-bg-tertiary)', 
+                      fontWeight: '600',
+                      fontSize: '1rem'
+                    }}
                   />
-                  <small className="text-muted">Automatically calculated</small>
+                  <small className="text-muted"><FontAwesomeIcon icon={faCheck} /> Automatically calculated based on your dates</small>
                 </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Place of Visit *</label>
+                <div className="mb-4">
+                  <label className="form-label"><FontAwesomeIcon icon={faMapMarkerAlt} /> Place of Visit</label>
                   <input
                     type="text"
                     className="form-control"
                     name="placeOfVisit"
                     value={formData.placeOfVisit}
                     onChange={handleChange}
-                    placeholder="e.g., Home, Delhi"
+                    placeholder="e.g., Home (Mumbai), Relative's place (Delhi)"
                     required
                   />
                 </div>
 
                 <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Contact Number *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label"><FontAwesomeIcon icon={faPhone} /> Your Contact Number</label>
                     <input
                       type="tel"
                       className="form-control"
@@ -157,8 +175,8 @@ const CreateOutpass = () => {
                     />
                   </div>
 
-                  <div className="col-md-6 mb-3">
-                    <label className="form-label">Parent Contact Number *</label>
+                  <div className="col-md-6 mb-4">
+                    <label className="form-label"><FontAwesomeIcon icon={faUsers} /> Parent Contact Number</label>
                     <input
                       type="tel"
                       className="form-control"
@@ -172,25 +190,27 @@ const CreateOutpass = () => {
                   </div>
                 </div>
 
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-3 mt-4 pt-3" style={{ borderTop: '1px solid #e2e8f0' }}>
                   <button
                     type="submit"
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-lg flex-grow-1"
                     disabled={loading}
+                    style={{ minHeight: '50px' }}
                   >
                     {loading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        Submitting...
+                        Submitting Request...
                       </>
                     ) : (
-                      'Submit Request'
+                      <><FontAwesomeIcon icon={faCheck} /> Submit Request</>
                     )}
                   </button>
                   <button
                     type="button"
-                    className="btn btn-secondary"
+                    className="btn btn-outline-primary btn-lg"
                     onClick={() => navigate('/student/dashboard')}
+                    style={{ minWidth: '120px', minHeight: '50px' }}
                   >
                     Cancel
                   </button>

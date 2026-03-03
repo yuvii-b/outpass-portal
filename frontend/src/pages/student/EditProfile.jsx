@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import outpassService from '../../services/outpassService';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit, faLock } from '@fortawesome/free-solid-svg-icons';
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({
@@ -73,17 +75,17 @@ const EditProfile = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 mb-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
-          <div className="card shadow">
-            <div className="card-header bg-primary text-white">
-              <h4 className="mb-0">Edit Profile</h4>
+          <div className="card shadow-lg card-fade-in">
+            <div className="card-header">
+              <h4 className="mb-0"><FontAwesomeIcon icon={faEdit} /> Edit Profile</h4>
             </div>
             <div className="card-body p-4">
               {/* Display Read-only fields */}
               <div className="alert alert-info mb-4">
-                <h6 className="alert-heading">Read-Only Information</h6>
+                <h6 className="alert-heading fw-bold"><FontAwesomeIcon icon={faLock} /> Read-Only Information</h6>
                 <div className="row">
                   <div className="col-md-6">
                     <p className="mb-1"><strong>Name:</strong> {profile?.name}</p>
