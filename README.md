@@ -194,45 +194,57 @@ VALUES ('student@college.edu', '$2a$10$...', 'STUDENT', 'John Doe', '1234567890'
 
 ## 🌐 Deployment
 
-### Frontend Build
-```bash
-cd frontend
-npm run build
-```
-The production build will be in `frontend/dist/`
+The app is deployed as three independent pieces:
 
-### Nginx Configuration
-```nginx
-# Frontend
-location /outpass-portal/ {
-    alias /path/to/frontend/dist/;
-    try_files $uri $uri/ /outpass-portal/index.html;
-}
+| Piece | Host | How |
+|-------|------|-----|
+| Frontend (React) | **Vercel** | Static Vite build, SPA rewrite ([frontend/vercel.json](frontend/vercel.json)) |
+| Backend (Spring Boot) | **Render** | Docker web service ([backend/Dockerfile](backend/Dockerfile)) |
+| Database (MySQL) | **External managed MySQL** | Aiven / Railway / Clever Cloud |
 
-# Backend API Proxy
-location /api/outpass-portal/ {
-    proxy_pass http://localhost:8080/api/;
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-}
+### Frontend (Vercel)
+Vercel runs `npm run build` and serves `frontend/dist/`. Set the backend URL in the
+Vercel project's environment variables and redeploy:
+```env
+VITE_API_BASE_URL=https://<your-render-service>.onrender.com/api
 ```
 
-### Cloudflare Tunnel
-Configure cloudflared to expose your nginx server:
-```bash
-cloudflared tunnel --url http://localhost:80
-```
+### Database (external managed MySQL)
+Render has no managed MySQL, so the database lives on a managed provider.
 
-### Backend Deployment
-Package as JAR:
+1. Create a MySQL instance and an empty database in the provider console.
+2. Apply the managed-friendly schema **once** (it omits `CREATE DATABASE`, `SET GLOBAL`,
+   and the events/procedures/views a managed DB can't run):
+   ```bash
+   mysql -h <host> -P <port> -u <user> -p<pass> --ssl-mode=REQUIRED <db_name> \
+     < backend/db/schema-managed.sql
+   ```
+   The app runs with `spring.jpa.hibernate.ddl-auto=validate`, so the tables must exist
+   and match the entities before the backend will start.
+
+### Backend (Render, Docker)
+Deploy via the [render.yaml](render.yaml) blueprint (or create a Docker web service pointing
+at `backend/Dockerfile`). Set these environment variables in the Render dashboard:
+
+| Variable | Notes |
+|----------|-------|
+| `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` | from the managed MySQL console |
+| `DB_SSL_MODE` | `REQUIRED` (managed MySQL enforces TLS) |
+| `JWT_SECRET` | signing secret for JWTs |
+| `CORS_ALLOWED_ORIGINS` | comma-separated, e.g. `https://outpass-portal.vercel.app` |
+
+`PORT` is injected by Render automatically; the app binds to it. The health check path is
+`/api/health`.
+
+> **Note:** Render's free web service sleeps after inactivity, so the first request after an
+> idle period cold-starts in ~30–50s.
+
+### Local build (self-hosted alternative)
 ```bash
 cd backend
 ./mvnw clean package
 java -jar target/portal-0.0.1-SNAPSHOT.jar
 ```
-
-Or run as a service using systemd on Linux. (preferred)
 
 ## 📊 Database Schema
 
